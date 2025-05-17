@@ -85,6 +85,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                 fontWeight: FontWeight.w600,
               ),
               child: AnimatedTextKit(
+                key: ValueKey('split_text_animation'),
                 animatedTexts: [
                   TypewriterAnimatedText(
                     "Tap here to split the video based on its duration into smaller parts.",
@@ -117,6 +118,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                 fontWeight: FontWeight.w600,
               ),
               child: AnimatedTextKit(
+                key: ValueKey('speed_text_animation'),
                 animatedTexts: [
                   TypewriterAnimatedText(
                     "Use this button to adjust playback speed.",
