@@ -416,7 +416,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       ),
     );
   }
-
+// merge button
   Widget _buildMergeButton(int index) {
     return GestureDetector(
       child: Padding(
