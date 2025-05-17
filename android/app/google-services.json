@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "735030885817",
+    "project_id": "hookstep-fade4",
+    "storage_bucket": "hookstep-fade4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:735030885817:android:447f64461fdebdc1448a68",
+        "android_client_info": {
+          "package_name": "com.headstart.hookstep"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "735030885817-b71n8lmrjgqe83kgn33qtto56ef8rpu6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.headstart.hookstep",
+            "certificate_hash": "32777498f2f8d7365ed4fe4e62f96b4f79561ce1"
+          }
+        },
+        {
+          "client_id": "735030885817-gllt4l9m5jrm119j8926kmear64kqs85.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBG5HwN91k52aBqvhecGtABLLkulTn6tI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "735030885817-gllt4l9m5jrm119j8926kmear64kqs85.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
