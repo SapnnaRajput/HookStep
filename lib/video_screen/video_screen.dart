@@ -76,25 +76,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         radius: 12,
         contents: [
           TargetContent(
-            align: ContentAlign.bottom,
-            child: DefaultTextStyle(
-              style: const TextStyle(
-                fontSize: 18.0,
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-              child: AnimatedTextKit(
-                key: ValueKey('split_text_animation'),
-                animatedTexts: [
-                  TypewriterAnimatedText(
-                    "Tap here to split the video based on its duration into smaller parts.",
-                    speed: Duration(milliseconds: 50),
-                  ),
-                ],
-                isRepeatingAnimation: false,
-                totalRepeatCount: 1,
-              ),
-            ),
+            align: ContentAlign.top,
+            child: SizedBox.shrink(),
           ),
         ],
       ),
@@ -109,25 +92,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         radius: 12,
         contents: [
           TargetContent(
-            align: ContentAlign.bottom,
-            child: DefaultTextStyle(
-              style: const TextStyle(
-                fontSize: 18.0,
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-              child: AnimatedTextKit(
-                key: ValueKey('speed_text_animation'),
-                animatedTexts: [
-                  TypewriterAnimatedText(
-                    "Use this button to adjust playback speed.",
-                    speed: Duration(milliseconds: 50),
-                  ),
-                ],
-                isRepeatingAnimation: false,
-                totalRepeatCount: 1,
-              ),
-            ),
+            align: ContentAlign.top,
+            child: SizedBox.shrink(),
           ),
         ],
       ),
@@ -162,7 +128,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                       tutorialCoachMark = TutorialCoachMark(
                         targets: [targets.firstWhere((t) => t.identify == "SpeedButton")],
                         colorShadow: Colors.black87,
-                        opacityShadow: 0.85,
+                        opacityShadow: 0.95,
                         paddingFocus: 10,
                         hideSkip: true,
                         onFinish: () {},
@@ -202,7 +168,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     }
                   },
                   colorShadow: Colors.black87,
-                  opacityShadow: 0.85,
+                  opacityShadow: 0.95,
                   paddingFocus: 10,
                   hideSkip: true,
                   onFinish: () async {

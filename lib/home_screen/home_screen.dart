@@ -20,7 +20,9 @@ import 'package:showcaseview/showcaseview.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import '../utils/app_const.dart';
 // import '../video_screen/video_screen_modified.dart';
+import '../video_screen/custom_youtube_player.dart';
 import '../video_screen/video_screen.dart';
+import '../video_screen/youtube_video_player_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -112,27 +114,14 @@ class _HomeScreenState extends State<HomeScreen> {
       TargetFocus(
         identify: "SearchField",
         keyTarget: _searchKey,
+        shape: ShapeLightFocus.RRect,
+        radius: 12,
         contents: [
           TargetContent(
             align: ContentAlign.top,
-            child: AnimatedTextKit(
-              totalRepeatCount: 1,
-              animatedTexts: [
-                TypewriterAnimatedText(
-                  'Paste the video link here to get started.',
-                  textStyle: const TextStyle(
-                    fontSize: 18.0,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  speed: const Duration(milliseconds: 50),
-                ),
-              ],
-            ),
+            child: SizedBox.shrink(), // Invisible widget
           ),
         ],
-        shape: ShapeLightFocus.RRect,
-        radius: 12,
       ),
     ]);
   }
@@ -142,27 +131,14 @@ class _HomeScreenState extends State<HomeScreen> {
       TargetFocus(
         identify: "FetchButton",
         keyTarget: _fetchButtonKey,
+        shape: ShapeLightFocus.RRect,
+        radius: 12,
         contents: [
           TargetContent(
             align: ContentAlign.top,
-            child: AnimatedTextKit(
-              totalRepeatCount: 1,
-              animatedTexts: [
-                TypewriterAnimatedText(
-                  'Tap here to play the video you pasted.',
-                  textStyle: const TextStyle(
-                    fontSize: 18.0,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  speed: const Duration(milliseconds: 50),
-                ),
-              ],
-            ),
+            child: SizedBox.shrink(),
           ),
         ],
-        shape: ShapeLightFocus.RRect,
-        radius: 12,
       ),
     );
   }
@@ -181,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         fetchButtonCoachMark = TutorialCoachMark(
           targets: [targets.last],
-          colorShadow: Colors.black.withOpacity(0.85),
+          colorShadow: Colors.black.withOpacity(0.95),
           textSkip: "",
           hideSkip: true,
           onClickTarget: (target) async {
@@ -385,6 +361,16 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     _determinePlatform(url);
+
+    if (_platform == 'YouTube') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => YoutubeVideoPlayerScreen(youtubeUrl: url),
+        ),
+      );
+      return;
+    }
 
     if (_platform == null) {
       print("Unsupported platform");
