@@ -77,7 +77,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         contents: [
           TargetContent(
             align: ContentAlign.top,
-            child: SizedBox.shrink(),
+            child: const SizedBox.shrink(),
           ),
         ],
       ),
@@ -93,7 +93,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         contents: [
           TargetContent(
             align: ContentAlign.top,
-            child: SizedBox.shrink(),
+            child: const SizedBox.shrink(),
           ),
         ],
       ),
@@ -121,14 +121,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   onClickTarget: (target) async {
                     if (target.identify == "SplitButton") {
                       tutorialCoachMark?.finish();
-                      await Future.delayed(Duration(milliseconds: 300));
+                      await Future.delayed(const Duration(milliseconds: 300));
                       _toggleSplit();
-                      await Future.delayed(Duration(seconds: 2));
+                      await Future.delayed(const Duration(seconds: 2));
 
                       tutorialCoachMark = TutorialCoachMark(
                         targets: [targets.firstWhere((t) => t.identify == "SpeedButton")],
                         colorShadow: Colors.black87,
-                        opacityShadow: 0.95,
+                        opacityShadow: 0.55,
                         paddingFocus: 10,
                         hideSkip: true,
                         onFinish: () {},
@@ -139,7 +139,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                             // print("Speed button target clicked");
                             // showToast("Speed button pressed", Colors.white);
 
-                            await Future.delayed(Duration(milliseconds: 300));
+                            await Future.delayed(const Duration(milliseconds: 300));
                             if (mounted) {
                               setState(() {
                                 isSpeedChange = true;
@@ -159,7 +159,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                       // print("Speed button target clicked");
                       // showToast("Speed button pressed", Colors.white);
 
-                      await Future.delayed(Duration(seconds: 1));
+                      await Future.delayed(const Duration(seconds: 1));
                       if (mounted) {
                         setState(() {
                           isSpeedChange = true;
@@ -168,7 +168,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     }
                   },
                   colorShadow: Colors.black87,
-                  opacityShadow: 0.95,
+                  opacityShadow: 0.85,
                   paddingFocus: 10,
                   hideSkip: true,
                   onFinish: () async {
@@ -196,7 +196,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   void _retryInitialization() {
     if (_retryCount < _maxRetries) {
       _retryCount++;
-      Future.delayed(Duration(seconds: 2), () {
+      Future.delayed(const Duration(seconds: 2), () {
         _initializePlayer();
       });
     } else {
@@ -618,7 +618,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => MasterPage(),
+                                builder: (context) => const MasterPage(),
                               ));
                         },
                         child: Column(
@@ -646,7 +646,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     _speedControlButtons(),
                   ],
                 )
-                    : SizedBox(),
+                    : const SizedBox(),
                 _splitClips.length > 1
                     ? Column(
                   children: [
@@ -655,7 +655,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                             ? height * 0.065
                             : height * 0.04,
                         width: width,
-                        color: Color.fromRGBO(53, 61, 74, 1),
+                        color: const Color.fromRGBO(53, 61, 74, 1),
                         child: Align(
                             alignment: _splitClips.length < 3
                                 ? Alignment.centerLeft
@@ -663,7 +663,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                             child: _splitClipView())),
                   ],
                 )
-                    : SizedBox(),
+                    : const SizedBox(),
                 GestureDetector(
                     onTap: () {
                       setState(() {
@@ -728,7 +728,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                       data: SliderTheme.of(context).copyWith(
                         trackHeight: 3, // Set custom height here
                         thumbShape:
-                        RoundSliderThumbShape(enabledThumbRadius: 6),
+                        const RoundSliderThumbShape(enabledThumbRadius: 6),
                       ),
                       child: Slider(
                         min: 0,

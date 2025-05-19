@@ -19,8 +19,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import '../utils/app_const.dart';
-// import '../video_screen/video_screen_modified.dart';
-import '../video_screen/custom_youtube_player.dart';
 import '../video_screen/video_screen.dart';
 import '../video_screen/youtube_video_player_screen.dart';
 
@@ -119,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
         contents: [
           TargetContent(
             align: ContentAlign.top,
-            child: SizedBox.shrink(), // Invisible widget
+            child: const SizedBox.shrink(), // Invisible widget
           ),
         ],
       ),
@@ -136,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
         contents: [
           TargetContent(
             align: ContentAlign.top,
-            child: SizedBox.shrink(),
+            child: const SizedBox.shrink(),
           ),
         ],
       ),
@@ -167,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
               fetchButtonCoachMark?.finish();
 
               // Delay to ensure dismissal happens first
-              Future.delayed(Duration(milliseconds: 100), () {
+              Future.delayed(const Duration(milliseconds: 100), () {
                 _fetchVideo();
               });
             }
@@ -546,17 +544,17 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Logout"),
-          content: Text("Are you sure you want to log out?"),
+          title: const Text("Logout"),
+          content: const Text("Are you sure you want to log out?"),
           actions: <Widget>[
             TextButton(
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text("Logout"),
+              child: const Text("Logout"),
               onPressed: () async {
                 final prefs = await SharedPreferences.getInstance();
 
@@ -891,10 +889,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
-                                  return Center(
+                                  return const Center(
                                       child: CircularProgressIndicator());
                                 } else if (snapshot.hasError) {
-                                  return Center(
+                                  return const Center(
                                       child: Text('Error loading image'));
                                 } else {
                                   String localImagePath = snapshot.data!;
@@ -905,7 +903,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     },
                                     child: Container(
                                       width: height * 0.18,
-                                      margin: EdgeInsets.symmetric(
+                                      margin: const EdgeInsets.symmetric(
                                           horizontal: 8, vertical: 16),
                                       decoration: BoxDecoration(
                                         color: Colors.white.withOpacity(0.6),
@@ -925,7 +923,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           Expanded(
                                             child: ClipRRect(
                                               borderRadius:
-                                                  BorderRadius.vertical(
+                                                  const BorderRadius.vertical(
                                                 top: Radius.circular(12),
                                               ),
                                               // child: Image.network(
@@ -936,12 +934,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 imageUrl: imageUrl,
                                                 fit: BoxFit.cover,
                                                 placeholder: (context, url) =>
-                                                    Center(
+                                                    const Center(
                                                         child:
                                                             CircularProgressIndicator()),
                                                 errorWidget:
                                                     (context, url, error) =>
-                                                        Icon(Icons.error),
+                                                        const Icon(Icons.error),
                                               ),
                                             ),
                                           ),
