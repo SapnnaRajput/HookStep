@@ -19,6 +19,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import '../utils/app_const.dart';
+// import '../video_screen/video_screen_modified.dart';
 import '../video_screen/video_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -42,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<TargetFocus> targets = [];
   TutorialCoachMark? tutorialCoachMark;
   bool hasShownFetchTutorial = false;
+  TutorialCoachMark? fetchButtonCoachMark;
 
 
   // final List<Map<String, String>> items = [
@@ -177,18 +179,33 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!shown) {
         _addFetchButtonTutorial();
 
-        TutorialCoachMark(
-          targets: [targets.last], // Only for fetch button
+        fetchButtonCoachMark = TutorialCoachMark(
+          targets: [targets.last],
           colorShadow: Colors.black.withOpacity(0.85),
           textSkip: "",
           hideSkip: true,
-        ).show(context: context);
+          onClickTarget: (target) async {
+            if (target.identify == "FetchButton") {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              await prefs.setBool('fetch_button_showcase_shown', true);
+              fetchButtonCoachMark?.finish();
 
-        prefs.setBool('fetch_button_showcase_shown', true); // Save so it doesn't repeat
+              // Delay to ensure dismissal happens first
+              Future.delayed(Duration(milliseconds: 100), () {
+                _fetchVideo();
+              });
+            }
+          },
+        );
+
+
+        fetchButtonCoachMark?.show(context: context);
+
+        prefs.setBool('fetch_button_showcase_shown', true); // Prevent re-show
       }
+
     }
   }
-
 
   Future<void> fetchItems() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -822,7 +839,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-
 
                 SizedBox(height: width * 0.06),
                 Row(

@@ -17,7 +17,9 @@ class VideoPlayerScreen extends StatefulWidget {
   final bool showVideoShowcase;
 
   VideoPlayerScreen(
-      {required this.videoUrl, required this.urlController, this.showVideoShowcase = false});
+      {required this.videoUrl,
+        required this.urlController,
+        this.showVideoShowcase = false});
 
   @override
   State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
@@ -35,13 +37,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   int? _currentPlayingSegment;
   int _retryCount = 0;
   final int _maxRetries = 3;
-  final GlobalKey _splitButtonKey = GlobalKey();
-  final GlobalKey _speedButtonKey = GlobalKey();
+  final GlobalKey splitButtonKey = GlobalKey();
+  final GlobalKey speedButtonKey = GlobalKey();
   OverlayEntry? _overlayEntry;
   List<TargetFocus> targets = [];
   TutorialCoachMark? tutorialCoachMark;
-
-
 
   @override
   void initState() {
@@ -62,7 +62,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         _retryInitialization();
       }
     });
-
   }
 
   void initTargets() {
@@ -72,7 +71,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     targets.add(
       TargetFocus(
         identify: "SplitButton",
-        keyTarget: _splitButtonKey,
+        keyTarget: splitButtonKey,
         shape: ShapeLightFocus.RRect,
         radius: 12,
         contents: [
@@ -105,7 +104,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     targets.add(
       TargetFocus(
         identify: "SpeedButton",
-        keyTarget: _speedButtonKey,
+        keyTarget: speedButtonKey,
         shape: ShapeLightFocus.RRect,
         radius: 12,
         contents: [
@@ -135,14 +134,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     );
   }
 
-
-
-
-
   Future<void> _initializePlayer() async {
     try {
       _controller = VideoPlayerController.network(widget.videoUrl)
-        ..initialize().then((_) async{
+        ..initialize().then((_) async {
           _controller?.setLooping(true);
           setState(() {
             _controller?.play();
@@ -153,20 +148,72 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             bool alreadyShown = prefs.getBool('video_showcase_shown') ?? false;
 
             if (!alreadyShown && mounted) {
-              initTargets(); // ✅ Create your target
-              tutorialCoachMark = TutorialCoachMark(
-                targets: targets,
-                colorShadow: Colors.black87,
-                opacityShadow: 0.85,
-                paddingFocus: 10,
-                hideSkip: true,
-                onFinish: () async {
-                  await prefs.setBool('video_showcase_shown', true);
-                },
-              )..show(context: context);
+              initTargets();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                tutorialCoachMark = TutorialCoachMark(
+                  targets: targets,
+                  onClickTarget: (target) async {
+                    if (target.identify == "SplitButton") {
+                      tutorialCoachMark?.finish();
+                      await Future.delayed(Duration(milliseconds: 300));
+                      _toggleSplit();
+                      await Future.delayed(Duration(seconds: 2));
+
+                      tutorialCoachMark = TutorialCoachMark(
+                        targets: [targets.firstWhere((t) => t.identify == "SpeedButton")],
+                        colorShadow: Colors.black87,
+                        opacityShadow: 0.85,
+                        paddingFocus: 10,
+                        hideSkip: true,
+                        onFinish: () {},
+                        onClickTarget: (target) async {
+                          if (target.identify == "SpeedButton") {
+                            tutorialCoachMark?.finish();
+
+                            // print("Speed button target clicked");
+                            // showToast("Speed button pressed", Colors.white);
+
+                            await Future.delayed(Duration(milliseconds: 300));
+                            if (mounted) {
+                              setState(() {
+                                isSpeedChange = true;
+                              });
+                            }
+                          }
+                        },
+                      );
+
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        tutorialCoachMark?.show(context: context);
+                      });
+
+                    } else if (target.identify == "SpeedButton") {
+                      tutorialCoachMark?.finish();
+
+                      // print("Speed button target clicked");
+                      // showToast("Speed button pressed", Colors.white);
+
+                      await Future.delayed(Duration(seconds: 1));
+                      if (mounted) {
+                        setState(() {
+                          isSpeedChange = true;
+                        });
+                      }
+                    }
+                  },
+                  colorShadow: Colors.black87,
+                  opacityShadow: 0.85,
+                  paddingFocus: 10,
+                  hideSkip: true,
+                  onFinish: () async {
+                    await prefs.setBool('video_showcase_shown', true);
+                  },
+                );
+
+                tutorialCoachMark?.show(context: context);
+              });
             }
           }
-          
         }).catchError((error) {
           // Log the error if initialization fails
           print('Error initializing video: $error');
@@ -291,19 +338,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         },
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: MediaQuery
-                .of(context)
-                .size
-                .width * 0.018,
+            horizontal: MediaQuery.of(context).size.width * 0.018,
           ),
           child: Text(
             label,
             style: GoogleFonts.dmSans(
               textStyle: TextStyle(
-                fontSize: MediaQuery
-                    .of(context)
-                    .size
-                    .width * 0.04,
+                fontSize: MediaQuery.of(context).size.width * 0.04,
                 color: colorWhite,
                 fontWeight: FontWeight.bold,
               ),
@@ -319,10 +360,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       scrollDirection: Axis.horizontal,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: _splitClips
-            .asMap()
-            .entries
-            .map((entry) {
+        children: _splitClips.asMap().entries.map((entry) {
           int index = entry.key;
           Map<String, double> clip = entry.value;
           return Row(
@@ -338,7 +376,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       ),
     );
   }
-
 
   Widget _buildClipWidget(Map<String, double> clip, int index) {
     return GestureDetector(
@@ -364,24 +401,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       child: Container(
         // Clip container styling
         height: _splitClips.length > 3
-            ? MediaQuery
-            .of(context)
-            .size
-            .height * 0.065
-            : MediaQuery
-            .of(context)
-            .size
-            .height * 0.04,
+            ? MediaQuery.of(context).size.height * 0.065
+            : MediaQuery.of(context).size.height * 0.04,
         decoration: BoxDecoration(
           border: Border.all(
               color: _currentPlayingSegment == index
                   ? colorSubTittle
                   : Colors.transparent),
           borderRadius: BorderRadius.all(
-              Radius.circular(MediaQuery
-                  .of(context)
-                  .size
-                  .width * 0.02)),
+              Radius.circular(MediaQuery.of(context).size.width * 0.02)),
           // color:_currentPlayingSegment == index
           //     ? colorBlack: colorSubTittle,
         ),
@@ -389,26 +417,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           child: Padding(
             padding: EdgeInsets.symmetric(
                 horizontal: _splitClips.length > 3
-                    ? MediaQuery
-                    .of(context)
-                    .size
-                    .width * 0.01
-                    : MediaQuery
-                    .of(context)
-                    .size
-                    .width * 0.05),
+                    ? MediaQuery.of(context).size.width * 0.01
+                    : MediaQuery.of(context).size.width * 0.05),
             child: Text(
               textAlign: TextAlign.center,
               _splitClips.length > 3
-                  ? '${index + 1}: ${_formatTime(
-                  clip['start']!)}s \n- \n${_formatTime(clip['end']!)}s'
-                  : '${index + 1}: ${_formatTime(
-                  clip['start']!)}s - ${_formatTime(clip['end']!)}s',
+                  ? '${index + 1}: ${_formatTime(clip['start']!)}s \n- \n${_formatTime(clip['end']!)}s'
+                  : '${index + 1}: ${_formatTime(clip['start']!)}s - ${_formatTime(clip['end']!)}s',
               style: TextStyle(
-                fontSize: MediaQuery
-                    .of(context)
-                    .size
-                    .width * 0.03,
+                fontSize: MediaQuery.of(context).size.width * 0.03,
                 color: colorWhite,
                 fontWeight: FontWeight.w500,
               ),
@@ -418,44 +435,27 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       ),
     );
   }
+
 // merge button
   Widget _buildMergeButton(int index) {
     return GestureDetector(
       child: Padding(
         padding: EdgeInsets.all(_splitClips.length > 3
-            ? MediaQuery
-            .of(context)
-            .size
-            .height * 0.003
-            : MediaQuery
-            .of(context)
-            .size
-            .height * 0.005),
+            ? MediaQuery.of(context).size.height * 0.003
+            : MediaQuery.of(context).size.height * 0.005),
         child: Container(
-            height: MediaQuery
-                .of(context)
-                .size
-                .height * 0.028,
-            width: MediaQuery
-                .of(context)
-                .size
-                .height * 0.028,
+            height: MediaQuery.of(context).size.height * 0.028,
+            width: MediaQuery.of(context).size.height * 0.028,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(
-                Radius.circular(MediaQuery
-                    .of(context)
-                    .size
-                    .height * 0.008),
+                Radius.circular(MediaQuery.of(context).size.height * 0.008),
               ),
               color: colorWhite,
             ),
             child: Icon(
               Icons.add,
               color: colorMainTheme,
-              size: MediaQuery
-                  .of(context)
-                  .size
-                  .height * 0.025,
+              size: MediaQuery.of(context).size.height * 0.025,
             )),
       ),
       onTap: () {
@@ -501,14 +501,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery
-        .of(context)
-        .size
-        .height;
-    double width = MediaQuery
-        .of(context)
-        .size
-        .width;
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
       // appBar: AppBar(
       //   title: Text('Video Player'),
@@ -552,10 +546,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                                   ? Icons.pause
                                   : Icons.play_arrow,
                               size:
-                              MediaQuery
-                                  .of(context)
-                                  .size
-                                  .height * 0.035,
+                              MediaQuery.of(context).size.height * 0.035,
                             ),
                             WantText(
                                 _controller!.value.isPlaying
@@ -576,10 +567,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                               color: _isMuted ? colorSubTittle : colorWhite,
                               _isMuted ? Icons.volume_off : Icons.volume_up,
                               size:
-                              MediaQuery
-                                  .of(context)
-                                  .size
-                                  .height * 0.035,
+                              MediaQuery.of(context).size.height * 0.035,
                             ),
                             WantText("Audio", width * 0.035, FontWeight.w500,
                                 _isMuted ? colorSubTittle : colorWhite)
@@ -596,10 +584,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                               _isMirrored ? colorSubTittle : colorWhite,
                               Icons.compare_rounded,
                               size:
-                              MediaQuery
-                                  .of(context)
-                                  .size
-                                  .height * 0.035,
+                              MediaQuery.of(context).size.height * 0.035,
                             ),
                             WantText("Mirror", width * 0.035, FontWeight.w500,
                                 _isMirrored ? colorSubTittle : colorWhite)
@@ -607,9 +592,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                         ),
                       ),
                       Container(
-                        key: _speedButtonKey,
+                        key: speedButtonKey,
                         child: GestureDetector(
                           onTap: () {
+                            if (tutorialCoachMark?.isShowing ?? false) return;
                             setState(() {
                               isSpeedChange = !isSpeedChange;
                             });
@@ -618,23 +604,24 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Icon(
-                                color:
-                                isSpeedChange ? colorSubTittle : colorWhite,
+                                color: isSpeedChange
+                                    ? colorSubTittle
+                                    : colorWhite,
                                 Icons.speed,
-                                size:
-                                MediaQuery
-                                    .of(context)
-                                    .size
-                                    .height * 0.035,
+                                size: MediaQuery.of(context).size.height *
+                                    0.035,
                               ),
-                              WantText("Speed", width * 0.035, FontWeight.w500,
+                              WantText(
+                                  "Speed",
+                                  width * 0.035,
+                                  FontWeight.w500,
                                   isSpeedChange ? colorSubTittle : colorWhite)
                             ],
                           ),
                         ),
                       ),
                       Container(
-                        key: _splitButtonKey,
+                        key: splitButtonKey,
                         child: GestureDetector(
                           onTap: _toggleSplit,
                           child: Column(
@@ -643,12 +630,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                               Icon(
                                 Icons.call_split,
                                 color: Colors.white,
-                                size: MediaQuery.of(context).size.height * 0.035,
+                                size: MediaQuery.of(context).size.height *
+                                    0.035,
                               ),
                               Text(
                                 'Split',
                                 style: TextStyle(
-                                  fontSize: MediaQuery.of(context).size.width * 0.035,
+                                  fontSize:
+                                  MediaQuery.of(context).size.width *
+                                      0.035,
                                   fontWeight: FontWeight.w500,
                                   color: Colors.white,
                                 ),
@@ -657,7 +647,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           ),
                         ),
                       ),
-
                       GestureDetector(
                         onTap: () {
                           Navigator.pushReplacement(
@@ -673,10 +662,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                               color: colorWhite,
                               Icons.home,
                               size:
-                              MediaQuery
-                                  .of(context)
-                                  .size
-                                  .height * 0.035,
+                              MediaQuery.of(context).size.height * 0.035,
                             ),
                             WantText("Home", width * 0.035, FontWeight.w500,
                                 colorWhite)
@@ -764,7 +750,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                             ],
                           ),
                         ),
-
                       ],
                     )),
                 ValueListenableBuilder(
@@ -776,8 +761,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     return SliderTheme(
                       data: SliderTheme.of(context).copyWith(
                         trackHeight: 3, // Set custom height here
-                        thumbShape: RoundSliderThumbShape(
-                            enabledThumbRadius: 6),
+                        thumbShape:
+                        RoundSliderThumbShape(enabledThumbRadius: 6),
                       ),
                       child: Slider(
                         min: 0,
@@ -786,8 +771,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                         activeColor: Colors.redAccent,
                         inactiveColor: Colors.white24,
                         onChanged: (newValue) {
-                          _controller!.seekTo(Duration(
-                              milliseconds: newValue.toInt()));
+                          _controller!.seekTo(
+                              Duration(milliseconds: newValue.toInt()));
                         },
                       ),
                     );
