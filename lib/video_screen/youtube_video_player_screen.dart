@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../home_screen/home_screen.dart';
+import '../masterpage/masterpage.dart';
 import '../utils/theam_manager.dart';
 import '../utils/want_text.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -261,7 +262,11 @@ class _YoutubeVideoPlayerScreenState extends State<YoutubeVideoPlayerScreen> {
                 Column(
                   children: [
                     IconButton(icon: Icon(Icons.home, color: colorWhite), onPressed: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen(),));
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MasterPage(),
+                          ));
                     }),
                     Text("Home", style: TextStyle(color: Colors.white),)
                   ],
