@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:http/http.dart' as http;
+import 'package:showcaseview/showcaseview.dart';
 import '../utils/app_const.dart';
 import '../utils/string_const.dart';
 import '../utils/theam_manager.dart';
@@ -13,6 +14,7 @@ import '../utils/toast_massage.dart';
 import '../utils/want_text.dart';
 import '../video_screen/video_screen.dart';
 import '../video_screen/youtube_video_play_screen.dart';
+import '../video_screen/youtube_video_player_screen.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -154,126 +156,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }
   }
 
-
-  // Future<void> _fetchVideo() async {
-  //   String url = _urlController.text.trim();
-  //   if (url.isEmpty) {
-  //     showToast("Please enter a URL", colorSubTittle);
-  //     return;
-  //   }
-  //
-  //   // Load search count and profile completion percentage
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   int searchCount = prefs.getInt('searchCount') ?? 0;
-  //   double profileCompletionPercentage =
-  //       prefs.getDouble('profileCompletionPercentage') ?? 0;
-  //
-  //   // Check if user has exceeded free fetch limit and profile is incomplete
-  //   if (searchCount >= 5 && profileCompletionPercentage < 100) {
-  //     showToast("Please complete your profile first", colorSubTittle);
-  //     return;
-  //   }
-  //
-  //   setState(() {
-  //     _isLoading = true;
-  //   });
-  //
-  //   try {
-  //     final response = await http.post(
-  //       Uri.parse('https://headstartai.genixbit.com/get_video_link'),
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: json.encode({
-  //         'url': url,
-  //       }),
-  //     );
-  //
-  //     print("Response Genixbit: ${response.statusCode}");
-  //
-  //     if (response.statusCode == 200) {
-  //       final data = json.decode(response.body);
-  //       String videoUrl = data['url'];
-  //
-  //       if (videoUrl.isNotEmpty) {
-  //         await _saveUrl(url, name: url);
-  //         await _saveVideoLink(url);
-  //         await _incrementSearchCount();
-  //
-  //         Navigator.push(
-  //           context,
-  //           MaterialPageRoute(
-  //             builder: (context) => VideoPlayerScreen(
-  //               videoUrl: videoUrl,
-  //               urlController: _urlController,
-  //             ),
-  //           ),
-  //         );
-  //       } else {
-  //         showToast("Failed to fetch video URL", colorSubTittle);
-  //         throw Exception("Failed to fetch video URL");
-  //       }
-  //     } else if (url.contains('youtu')) {
-  //       await _saveUrl(url, name: url);
-  //       await _saveVideoLink(url);
-  //       await _incrementSearchCount();
-  //
-  //       Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => FullScreenYouTubePlayer(videoUrl: url),
-  //         ),
-  //       );
-  //     } else if (url.contains('instagram')) {
-  //       final instagramResponse = await http.get(
-  //         Uri.parse('https://dancebuddy.io/api/extract_video_details?url=$url'),
-  //       );
-  //       print("Response Dancebuddy: ${response.statusCode}");
-  //       if (instagramResponse.statusCode == 200) {
-  //         final instagramData = json.decode(instagramResponse.body);
-  //         String videoSrc = instagramData['videoSrc'];
-  //
-  //         if (videoSrc.isNotEmpty) {
-  //           await _saveUrl(url, name: url);
-  //           await _saveVideoLink(videoSrc);
-  //           await _incrementSearchCount();
-  //
-  //           Navigator.push(
-  //             context,
-  //             MaterialPageRoute(
-  //               builder: (context) => VideoPlayerScreen(
-  //                 videoUrl: videoSrc,
-  //                 urlController: _urlController,
-  //               ),
-  //             ),
-  //           );
-  //         } else {
-  //           showToast("Failed to fetch Instagram video URL", colorSubTittle);
-  //           throw Exception("Failed to fetch Instagram video URL");
-  //         }
-  //       } else {
-  //         showToast("Error fetching Instagram video", colorSubTittle);
-  //         throw Exception("Error fetching Instagram video: ${instagramResponse.body}");
-  //       }
-  //     } else {
-  //       final errorResponse = json.decode(response.body);
-  //       String errorMessage = errorResponse['error'] ??
-  //           "An error occurred while fetching the video";
-  //
-  //       showToast(errorMessage, colorSubTittle);
-  //     }
-  //   } catch (e) {
-  //     showToast(e.toString(), colorSubTittle);
-  //   } finally {
-  //     setState(() {
-  //       _isLoading = false;
-  //     });
-  //   }
-  // }
-  //
-  //
-
-
   Future<void> _fetchVideo() async {
     String url = _urlController.text.trim();
     if (url.isEmpty) {
@@ -295,8 +177,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
     _determinePlatform(url);
 
+    if (_platform == 'YouTube') {
+      await _saveUrl(url, name: url);
+      await _saveVideoLink(url);
+      await _incrementSearchCount();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => YoutubeVideoPlayerScreen(youtubeUrl: url),
+        ),
+      );
+      return;
+    }
+
     if (_platform == null) {
-      showToast("Unsupported platform", colorSubTittle);
+      print("Unsupported platform");
+      // showToast("Unsupported platform", colorSubTittle);
       return;
     }
 
@@ -332,20 +228,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
       if (videoUrl.isNotEmpty) {
         await _saveUrl(url, name: url);
         await _saveVideoLink(url);
-        await _incrementSearchCount();
 
         // Navigate to video player screen
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => VideoPlayerScreen(
-              videoUrl: videoUrl,
-              urlController: _urlController,
+            builder: (context) => ShowCaseWidget(
+              builder: (context) => VideoPlayerScreen(
+                videoUrl: videoUrl,
+                urlController: _urlController,
+                showVideoShowcase: true,
+              ),
             ),
           ),
         );
       } else {
-        throw Exception("Failed to fetch video URL");
+        throw ("Failed to fetch video URL");
       }
     } catch (e) {
       showToast(e.toString(), colorSubTittle);
@@ -405,96 +303,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
       throw Exception("Error fetching video with secondary API: $e");
     }
   }
-
-
-// Future<void> _fetchVideo() async {
-//   String url = _urlController.text.trim();
-//   if (url.isEmpty) {
-//     showToast("Please enter a URL", colorSubTittle);
-//     return;
-//   }
-//
-//   // Load search count and profile completion percentage
-//   SharedPreferences prefs = await SharedPreferences.getInstance();
-//   int searchCount = prefs.getInt('searchCount') ?? 0;
-//   double profileCompletionPercentage =
-//       prefs.getDouble('profileCompletionPercentage') ?? 0;
-//
-//   // Check if user has exceeded free fetch limit and profile is incomplete
-//   if (searchCount >= 5 && profileCompletionPercentage < 100) {showToast( "Please complete your profile first", colorSubTittle)
-//    ;
-//
-//     return;
-//   }
-//
-//   _determinePlatform(url);
-//
-//   if (_platform == null) {
-//     showToast("Unsupported platform", colorSubTittle);
-//     return;
-//   }
-//
-//   setState(() {
-//     _isLoading = true;
-//   });
-//
-//   try {
-//     String videoUrl;
-//
-//     switch (_platform) {
-//       case 'YouTube':
-//         videoUrl = url;
-//         break;
-//       case 'Instagram':
-//         videoUrl = await _fetchOtherPlatformVideo(url);
-//         break;
-//       case 'Facebook':
-//         videoUrl = await _fetchOtherPlatformVideo(url);
-//         break;
-//       case 'TikTok':
-//         videoUrl = await _fetchOtherPlatformVideo(url);
-//         break;
-//       default:
-//         throw Exception("Unsupported platform");
-//     }
-//
-//     if (videoUrl.isNotEmpty) {
-//       await _saveUrl(url, name: url);
-//       await _saveVideoLink(url);
-//
-//       await _incrementSearchCount();
-//
-//       if (_platform == 'YouTube') {
-//         // Navigate to FullScreenYouTubePlayer if the platform is YouTube
-//         Navigator.push(
-//           context,
-//           MaterialPageRoute(
-//             builder: (context) => FullScreenYouTubePlayer(videoUrl: videoUrl),
-//           ),
-//         );
-//       } else {
-//         // Navigate to VideoPlayerScreen for other platforms
-//         Navigator.push(
-//           context,
-//           MaterialPageRoute(
-//             builder: (context) => VideoPlayerScreen(
-//               videoUrl: videoUrl,
-//               urlController: _urlController,
-//             ),
-//           ),
-//         );
-//       }
-//     } else {
-//       throw Exception("Failed to fetch video URL");
-//     }
-//   } catch (e) {
-//     showToast(e.toString(), colorSubTittle);
-//   } finally {
-//     setState(() {
-//       _isLoading = false;
-//     });
-//   }
-// }
 
   Future<void> _incrementSearchCount() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

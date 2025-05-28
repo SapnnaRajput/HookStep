@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dancebuddy/auth/login_screen/login_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -44,40 +43,6 @@ class _HomeScreenState extends State<HomeScreen> {
   TutorialCoachMark? tutorialCoachMark;
   bool hasShownFetchTutorial = false;
   TutorialCoachMark? fetchButtonCoachMark;
-
-
-  // final List<Map<String, String>> items = [
-  //   {
-  //     'videoUrl': 'https://youtube.com/shorts/zUbW0GsRT1k?si=fJyjymZezgAiXEnh',
-  //     'imageUrl':
-  //         'https://i.ytimg.com/vi/zUbW0GsRT1k/oar2.jpg?sqp=-oaymwEoCJUDENAFSFqQAgHyq4qpAxcIARUAAIhC2AEB4gEKCBgQAhgGOAFAAQ==&rs=AOn4CLDbdnhG1dqw034SaXZFDFzx8cK-mw',
-  //   },
-  //   {
-  //     'videoUrl': 'https://youtube.com/shorts/JAeVcLPP8kI?si=-fE_fW7C1jX3W-0H',
-  //     'imageUrl':
-  //         'https://i.ytimg.com/vi/JAeVcLPP8kI/hq720.jpg?sqp=-oaymwEoCJUDENAFSFryq4qpAxoIARUAAIhC0AEB2AEB4gEKCBgQAhgGOAFAAQ==&rs=AOn4CLDKATIRRO_7upMGsovXxZ5gyeabbg',
-  //   },
-  //   // {
-  //   //   'videoUrl': 'https://youtube.com/shorts/WCciYRmBJNk?si=JINZyzv4Z_f-1lTt',
-  //   //   'imageUrl':
-  //   //       'https://i.ytimg.com/vi/WCciYRmBJNk/oar2.jpg?sqp=-oaymwEoCJQDENAFSFqQAgHyq4qpAxcIARUAAIhC2AEB4gEKCBgQAhgGOAFAAQ==&rs=AOn4CLDp_Yl9J3DDyDpj7Ue-uKZas6GWPg',
-  //   // },
-  //   {
-  //     'videoUrl': 'https://youtube.com/shorts/7GBm5rbr50U?si=Cjc5g_Cj3L6Nd00-',
-  //     'imageUrl':
-  //         'https://i.ytimg.com/vi/7GBm5rbr50U/oar2.jpg?sqp=-oaymwEoCJUDENAFSFqQAgHyq4qpAxcIARUAAIhC2AEB4gEKCBgQAhgGOAFAAQ==&rs=AOn4CLADYAiCmIyew9EC703G6l0bWGy5UQ',
-  //   },
-  //   {
-  //     'videoUrl': 'https://youtube.com/shorts/aYgA6cIzqm8?si=3UOkPnBSGW9h5RAx',
-  //     'imageUrl': 'https://i.ytimg.com/vi/aYgA6cIzqm8/oar2.jpg',
-  //   },
-  //   {
-  //     'videoUrl': 'https://youtube.com/shorts/BF5i1bHlkyw?si=vKj_lmgu0EjLRJCI',
-  //     'imageUrl':
-  //         'https://i.ytimg.com/vi/BF5i1bHlkyw/oar2.jpg?sqp=-oaymwEoCJUDENAFSFqQAgHyq4qpAxcIARUAAIhC2AEB4gEKCBgQAhgGOAFAAQ==&rs=AOn4CLCSRS_9m1B4-cOsCoV9USdsb7-XAA',
-  //   },
-  // ];
-
   List<Map<String, String>> items = [];
   static const String videoUrlKeyPrefix = 'video_url_';
 
@@ -361,6 +326,9 @@ class _HomeScreenState extends State<HomeScreen> {
     _determinePlatform(url);
 
     if (_platform == 'YouTube') {
+      await _saveUrl(url, name: url);
+      await _saveVideoLink(url);
+      await _incrementSearchCount();
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -579,82 +547,82 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Logout Confirmation Dialog
-  // void _showDeleteAccountDialog(BuildContext context) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: Text("Delete Account"),
-  //         content: Text("Are you sure you want to Delete Account?"),
-  //         actions: <Widget>[
-  //           TextButton(
-  //             child: Text("Cancel"),
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //           ),
-  //           TextButton(
-  //             child: Text("Delete Account"),
-  //             onPressed: () async {
-  //               final prefs = await SharedPreferences.getInstance();
-  //
-  //               // Retrieve the user's _id from SharedPreferences
-  //               String? id = prefs.getString('id');
-  //               String? token = prefs.getString('token');
-  //
-  //               if (id != null) {
-  //                 // Define the API URL
-  //                 final url = Uri.parse(
-  //                     '$baseUrl/api/user/deleteUser');
-  //
-  //                 // Define the request body
-  //                 final body = jsonEncode({
-  //                   "_id": id,
-  //                 });
-  //
-  //                 // Perform the DELETE request
-  //                 final response = await http.post(
-  //                   url,
-  //                   headers: {
-  //                     'Authorization': 'Bearer $token',
-  //                     'Content-Type': 'application/json',
-  //                   },
-  //                   body: body,
-  //                 );
-  //
-  //                 print("delete account status code: ${response.statusCode}");
-  //
-  //                 if (response.statusCode == 200 ||
-  //                     response.statusCode == 201) {
-  //                   // Clear all relevant data from SharedPreferences
-  //                   await prefs.clear();
-  //
-  //                   // Navigate to the login screen
-  //                   Navigator.pushAndRemoveUntil(
-  //                     context,
-  //                     MaterialPageRoute(
-  //                       builder: (context) => LoginScreeen(),
-  //                     ),
-  //                         (route) => false,
-  //                   );
-  //                   showToast("Account Deleted Successfully", colorBlack);
-  //                 } else {
-  //                   // Handle the error case if the account deletion fails
-  //                   showToast('Failed to delete account. Please try again.',
-  //                       colorSubTittle);
-  //                 }
-  //               } else {
-  //                 // If the id is not found, display an error
-  //                 showToast('User ID not found.', colorSubTittle);
-  //               }
-  //               // Perform logout action
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
+  void _showDeleteAccountDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Delete Account"),
+          content: Text("Are you sure you want to Delete Account?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("Delete Account"),
+              onPressed: () async {
+                final prefs = await SharedPreferences.getInstance();
+
+                // Retrieve the user's _id from SharedPreferences
+                String? id = prefs.getString('id');
+                String? token = prefs.getString('token');
+
+                if (id != null) {
+                  // Define the API URL
+                  final url = Uri.parse(
+                      '$baseUrl/api/user/deleteUser');
+
+                  // Define the request body
+                  final body = jsonEncode({
+                    "_id": id,
+                  });
+
+                  // Perform the DELETE request
+                  final response = await http.post(
+                    url,
+                    headers: {
+                      'Authorization': 'Bearer $token',
+                      'Content-Type': 'application/json',
+                    },
+                    body: body,
+                  );
+
+                  print("delete account status code: ${response.statusCode}");
+
+                  if (response.statusCode == 200 ||
+                      response.statusCode == 201) {
+                    // Clear all relevant data from SharedPreferences
+                    await prefs.clear();
+
+                    // Navigate to the login screen
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LoginScreeen(),
+                      ),
+                          (route) => false,
+                    );
+                    showToast("Account Deleted Successfully", colorBlack);
+                  } else {
+                    // Handle the error case if the account deletion fails
+                    showToast('Failed to delete account. Please try again.',
+                        colorSubTittle);
+                  }
+                } else {
+                  // If the id is not found, display an error
+                  showToast('User ID not found.', colorSubTittle);
+                }
+                // Perform logout action
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   void _selectUrl(String url) {
     setState(() {
@@ -748,17 +716,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   _showLogoutDialog(context);
                 },
               ),
-              // ListTile(
-              //   leading: Icon(
-              //     Icons.delete,
-              //     color: colorBlack,
-              //   ),
-              //   title: WantText("Delete Account", width * 0.045,
-              //       FontWeight.w500, colorBlack),
-              //   onTap: () {
-              //     _showDeleteAccountDialog(context);
-              //   },
-              // ),
+              ListTile(
+                leading: Icon(
+                  Icons.delete,
+                  color: colorBlack,
+                ),
+                title: WantText("Delete Account", width * 0.045,
+                    FontWeight.w500, colorBlack),
+                onTap: () {
+                  _showDeleteAccountDialog(context);
+                },
+              ),
             ],
           ),
         ),

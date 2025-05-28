@@ -6,6 +6,7 @@ import 'package:dancebuddy/splash/splash.dart';
 import 'package:dancebuddy/splash/splash_bloc/splash_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:showcaseview/showcaseview.dart';
 
 void main()async {WidgetsFlutterBinding.ensureInitialized();
@@ -52,7 +53,7 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'HookStep',
       debugShowCheckedModeBanner: false,
       home: MultiBlocProvider(providers: [
