@@ -547,83 +547,82 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Logout Confirmation Dialog
-  void _showDeleteAccountDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Delete Account"),
-          content: Text("Are you sure you want to Delete Account?"),
-          actions: <Widget>[
-            TextButton(
-              child: Text("Cancel"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text("Delete Account"),
-              onPressed: () async {
-                final prefs = await SharedPreferences.getInstance();
-
-                // Retrieve the user's _id from SharedPreferences
-                String? id = prefs.getString('id');
-                String? token = prefs.getString('token');
-
-                if (id != null) {
-                  // Define the API URL
-                  final url = Uri.parse(
-                      '$baseUrl/api/user/deleteUser');
-
-                  // Define the request body
-                  final body = jsonEncode({
-                    "_id": id,
-                  });
-
-                  // Perform the DELETE request
-                  final response = await http.post(
-                    url,
-                    headers: {
-                      'Authorization': 'Bearer $token',
-                      'Content-Type': 'application/json',
-                    },
-                    body: body,
-                  );
-
-                  print("delete account status code: ${response.statusCode}");
-
-                  if (response.statusCode == 200 ||
-                      response.statusCode == 201) {
-                    // Clear all relevant data from SharedPreferences
-                    await prefs.clear();
-
-                    // Navigate to the login screen
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LoginScreeen(),
-                      ),
-                          (route) => false,
-                    );
-                    showToast("Account Deleted Successfully", colorBlack);
-                  } else {
-                    // Handle the error case if the account deletion fails
-                    showToast('Failed to delete account. Please try again.',
-                        colorSubTittle);
-                  }
-                } else {
-                  // If the id is not found, display an error
-                  showToast('User ID not found.', colorSubTittle);
-                }
-                // Perform logout action
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
+  // void _showDeleteAccountDialog(BuildContext context) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text("Delete Account"),
+  //         content: Text("Are you sure you want to Delete Account?"),
+  //         actions: <Widget>[
+  //           TextButton(
+  //             child: Text("Cancel"),
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //           TextButton(
+  //             child: Text("Delete Account"),
+  //             onPressed: () async {
+  //               final prefs = await SharedPreferences.getInstance();
+  //
+  //               // Retrieve the user's _id from SharedPreferences
+  //               String? id = prefs.getString('id');
+  //               String? token = prefs.getString('token');
+  //
+  //               if (id != null) {
+  //                 // Define the API URL
+  //                 final url = Uri.parse(
+  //                     '$baseUrl/api/user/deleteUser');
+  //
+  //                 // Define the request body
+  //                 final body = jsonEncode({
+  //                   "_id": id,
+  //                 });
+  //
+  //                 // Perform the DELETE request
+  //                 final response = await http.post(
+  //                   url,
+  //                   headers: {
+  //                     'Authorization': 'Bearer $token',
+  //                     'Content-Type': 'application/json',
+  //                   },
+  //                   body: body,
+  //                 );
+  //
+  //                 print("delete account status code: ${response.statusCode}");
+  //
+  //                 if (response.statusCode == 200 ||
+  //                     response.statusCode == 201) {
+  //                   // Clear all relevant data from SharedPreferences
+  //                   await prefs.clear();
+  //
+  //                   // Navigate to the login screen
+  //                   Navigator.pushAndRemoveUntil(
+  //                     context,
+  //                     MaterialPageRoute(
+  //                       builder: (context) => LoginScreeen(),
+  //                     ),
+  //                         (route) => false,
+  //                   );
+  //                   showToast("Account Deleted Successfully", colorBlack);
+  //                 } else {
+  //                   // Handle the error case if the account deletion fails
+  //                   showToast('Failed to delete account. Please try again.',
+  //                       colorSubTittle);
+  //                 }
+  //               } else {
+  //                 // If the id is not found, display an error
+  //                 showToast('User ID not found.', colorSubTittle);
+  //               }
+  //               // Perform logout action
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
   void _selectUrl(String url) {
     setState(() {
       _urlController.text = url;
@@ -716,17 +715,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   _showLogoutDialog(context);
                 },
               ),
-              ListTile(
-                leading: Icon(
-                  Icons.delete,
-                  color: colorBlack,
-                ),
-                title: WantText("Delete Account", width * 0.045,
-                    FontWeight.w500, colorBlack),
-                onTap: () {
-                  _showDeleteAccountDialog(context);
-                },
-              ),
+              // ListTile(
+              //   leading: Icon(
+              //     Icons.delete,
+              //     color: colorBlack,
+              //   ),
+              //   title: WantText("Delete Account", width * 0.045,
+              //       FontWeight.w500, colorBlack),
+              //   onTap: () {
+              //     _showDeleteAccountDialog(context);
+              //   },
+              // ),
             ],
           ),
         ),
